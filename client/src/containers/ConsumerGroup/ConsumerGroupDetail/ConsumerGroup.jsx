@@ -123,6 +123,17 @@ class ConsumerGroup extends Component {
           </div>
         </div>
 
+        {roles.group && roles.group['group/offsets/delete'] && (
+            <aside>
+              <Link
+                  to={`/ui/${clusterId}/group/${consumerGroupId}/offsetsdelete`}
+                  className="btn btn-secondary"
+              >
+                Delete Offsets
+              </Link>
+            </aside>
+        )}
+
         {roles.group && roles.group['group/offsets/update'] && (
           <aside>
             <Link
