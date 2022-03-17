@@ -1,15 +1,8 @@
 import React from 'react';
 import Header from '../../../Header/Header';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DatePicker from '../../../../components/DatePicker';
-import Joi from 'joi-browser';
 import {
   uriConsumerGroup,
-  uriConsumerGroupOffsetsByTimestamp, uriConsumerGroupTopics,
-  uriConsumerGroupUpdate
 } from '../../../../utils/endpoints';
-import './styles.scss';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import _ from 'lodash';
 
