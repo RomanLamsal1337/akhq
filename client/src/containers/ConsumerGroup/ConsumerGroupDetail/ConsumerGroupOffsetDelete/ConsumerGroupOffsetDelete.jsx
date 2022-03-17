@@ -1,13 +1,14 @@
 import React from 'react';
 import Header from '../../../Header/Header';
 import {
-  uriConsumerGroup,
+  uriConsumerGroup, uriDeleteDefinition, uriDeleteGroupOffsets,
 } from '../../../../utils/endpoints';
 import 'react-toastify/dist/ReactToastify.css';
 import Root from "../../../../components/Root";
 import Table from "../../../../components/Table";
 import constants from "../../../../utils/constants";
 import ConfirmModal from "../../../../components/Modal/ConfirmModal";
+import {toast} from "react-toastify";
 
 class ConsumerGroupOffsetDelete extends Root {
   state = {
@@ -36,7 +37,7 @@ class ConsumerGroupOffsetDelete extends Root {
       data = await this.getApi(uriConsumerGroup(clusterId, consumerGroupId));
       data = data.data;
 
-      if (data) {
+      if (data && data.topics) {
         this.setState({topicIds: data.topics.map(topic => ({topic}))});
       } else {
         this.setState({topicIds: []});
@@ -48,8 +49,22 @@ class ConsumerGroupOffsetDelete extends Root {
   };
 
   closeDeleteModal = () => {
-    this.setState({ showDeleteModal: false, deleteMessage: '' });
+    this.setState({ showDeleteModal: false, deleteMessage: '', deleteAllOffsetsForTopic: ''  });
   };
+
+  deleteOffsets = () => {
+    const { clusterId, consumerGroupId, deleteAllOffsetsForTopic} = this.state;
+    this.removeApi(uriDeleteGroupOffsets(clusterId, consumerGroupId, deleteAllOffsetsForTopic))
+        .then(() => {
+          toast.success(`Offsets for topic '${deleteAllOffsetsForTopic}' and consumer group '${consumerGroupId}' are deleted`);
+          this.setState({ showDeleteModal: false, deleteMessage: '', deleteAllOffsetsForTopic: '' }, () => {
+            this.getTopics();
+          });
+        })
+        .catch(() => {
+          this.setState({ showDeleteModal: false, deleteMessage: '', deleteAllOffsetsForTopic: '' });
+        });
+  }
 
   handleOnDelete(topicId) {
     this.setState({ deleteAllOffsetsForTopic: topicId }, () => {
@@ -103,7 +118,7 @@ class ConsumerGroupOffsetDelete extends Root {
           <ConfirmModal
               show={this.state.showDeleteModal}
               handleCancel={this.closeDeleteModal}
-              handleConfirm={this.deleteDefinition}
+              handleConfirm={this.deleteOffsets}
               message={this.state.deleteMessage}
           />
         </div>
